@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Wash Timer</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 20px;
+      background-color: #0C1231;
+      color: #ffffff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: #111A47;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table thead {
+      background-color: #163060;
+      color: #ffffff;
+    }
+
+    table, th, td {
+      border: none;
+      text-align: center;
+    }
+
+    th, td {
+      padding: 15px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #1A224F;
+    }
+
+    tr:hover {
+      background-color: #2A3765;
+    }
+
+    .timer {
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    .green {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .orange {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .red {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    form {
+      background-color: #111A47;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    form input {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    form button {
+      background-color: #1f3c88;
+      color: #ffffff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      display: block;
+      width: 100%;
+    }
+
+    form button:hover {
+      background-color: #163060;
+    }
+  </style>
+</head>
+<body>
+  <h1>Car Wash Schedule</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Countdown</th>
+      </tr>
+    </thead>
+    <tbody id="scheduleTable">
+      <!-- Rows will be dynamically generated -->
+    </tbody>
+  </table>
+
+  <h2 style="text-align: center; color: #ffffff;">Add Client</h2>
+  <form id="addClientForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
+
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" required>
+
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" required>
+
+    <button type="submit">Add</button>
+  </form>
+
+  <script>
+    const scheduleTable = document.getElementById('scheduleTable');
+    const addClientForm = document.getElementById('addClientForm');
+
+    // Function to calculate time difference
+    function calculateTimeDifference(endDate) {
+      const now = new Date();
+      const end = new Date(endDate);
+      const difference = end - now;
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      return { days, hours, minutes, seconds };
+    }
+
+    // Function to determine timer color
+    function getTimerClass(days) {
+      if (days > 7) return 'green';
+      if (days <= 7 && days > 0) return 'orange';
+      return 'red';
+    }
+
+    // Function to update the table
+    function updateTable() {
+      scheduleTable.innerHTML = '';
+      clients.forEach(client => {
+        const { days, hours, minutes, seconds } = calculateTimeDifference(client.endDate);
+        const timerClass = getTimerClass(days);
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${client.name}</td>
+          <td>${client.startDate}</td>
+          <td>${client.endDate}</td>
+          <td><span class="timer ${timerClass}">${days}d ${hours}h ${minutes}m ${seconds}s</span></td>
+        `;
+        scheduleTable.appendChild(row);
+      });
+    }
+
+    // Initial client data
+    const clients = [];
+
+    // Add client form submission
+    addClientForm.addEventListener('submit', event => {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+
+      clients.push({ name, startDate, endDate });
+      updateTable();
+
+      // Clear form inputs
+      addClientForm.reset();
+    });
+
+    // Update countdown every second
+    setInterval(updateTable, 1000);
+  </script>
+</body>
+</html>
