@@ -119,6 +119,15 @@
       padding: 0 10px;
     }
 
+    .log-table {
+      margin-top: 30px;
+      background-color: #111A47;
+    }
+
+    .log-table thead {
+      background-color: #163060;
+    }
+
   </style>
 </head>
 <body>
@@ -141,7 +150,10 @@
 
   <h2 style="text-align: center; color: #ffffff;">Add Client</h2>
   <form id="addClientForm">
-    <label for="name">Name:</label>
+    <label for="userName">Your Name:</label>
+    <input type="text" id="userName" required>
+
+    <label for="name">Client Name:</label>
     <input type="text" id="name" required>
 
     <label for="startDate">Start Date:</label>
@@ -153,9 +165,25 @@
     <button type="submit">Add</button>
   </form>
 
+  <h2 style="text-align: center; color: #ffffff;">Action Log</h2>
+  <table class="log-table">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>User</th>
+        <th>Action</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody id="logTable">
+      <!-- Log entries will be dynamically generated -->
+    </tbody>
+  </table>
+
   <script>
     const scheduleTable = document.getElementById('scheduleTable');
     const addClientForm = document.getElementById('addClientForm');
+    const logTable = document.getElementById('logTable');
 
     // Function to calculate time difference
     function calculateTimeDifference(endDate) {
@@ -197,29 +225,50 @@
       });
     }
 
-    // Get saved clients from localStorage
+    // Function to log actions
+    function logAction(action, details, userName) {
+      const timestamp = new Date().toLocaleString();
+      const logEntry = document.createElement('tr');
+      logEntry.innerHTML = `
+        <td>${timestamp}</td>
+        <td>${userName}</td>
+        <td>${action}</td>
+        <td>${details}</td>
+      `;
+      logTable.appendChild(logEntry);
+      // Save log to localStorage
+      const logs = JSON.parse(localStorage.getItem('logs')) || [];
+      logs.push({ timestamp, userName, action, details });
+      localStorage.setItem('logs', JSON.stringify(logs));
+    }
+
+    // Get saved clients and logs from localStorage
     let clients = JSON.parse(localStorage.getItem('clients')) || [];
+    let logs = JSON.parse(localStorage.getItem('logs')) || [];
 
     // Function to remove a client
     function removeClient(index) {
-      clients.splice(index, 1); // Remove client from array
+      const removedClient = clients.splice(index, 1)[0]; // Get and remove client
       localStorage.setItem('clients', JSON.stringify(clients)); // Update localStorage
-      updateTable(); // Re-render the table
+      updateTable();
+      logAction('Removed', `Client: ${removedClient.name}`, removedClient.userName);
     }
 
     // Add client form submission
     addClientForm.addEventListener('submit', event => {
       event.preventDefault();
 
+      const userName = document.getElementById('userName').value;
       const name = document.getElementById('name').value;
       const startDate = document.getElementById('startDate').value;
       const endDate = document.getElementById('endDate').value;
 
-      const newClient = { name, startDate, endDate };
+      const newClient = { name, startDate, endDate, userName };
       clients.push(newClient);
 
       // Save updated clients list to localStorage
       localStorage.setItem('clients', JSON.stringify(clients));
+      logAction('Added', `Client: ${name}`, userName);
 
       updateTable();
 
@@ -229,6 +278,18 @@
 
     // Update countdown every second
     setInterval(updateTable, 1000);
+
+    // Display saved logs in the log table
+    logs.forEach(log => {
+      const logEntry = document.createElement('tr');
+      logEntry.innerHTML = `
+        <td>${log.timestamp}</td>
+        <td>${log.userName}</td>
+        <td>${log.action}</td>
+        <td>${log.details}</td>
+      `;
+      logTable.appendChild(logEntry);
+    });
 
     // Initial call to populate the table
     updateTable();
