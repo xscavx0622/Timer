@@ -187,8 +187,8 @@
       });
     }
 
-    // Initial client data
-    const clients = [];
+    // Get saved clients from localStorage
+    let clients = JSON.parse(localStorage.getItem('clients')) || [];
 
     // Add client form submission
     addClientForm.addEventListener('submit', event => {
@@ -198,7 +198,12 @@
       const startDate = document.getElementById('startDate').value;
       const endDate = document.getElementById('endDate').value;
 
-      clients.push({ name, startDate, endDate });
+      const newClient = { name, startDate, endDate };
+      clients.push(newClient);
+
+      // Save updated clients list to localStorage
+      localStorage.setItem('clients', JSON.stringify(clients));
+
       updateTable();
 
       // Clear form inputs
@@ -207,6 +212,9 @@
 
     // Update countdown every second
     setInterval(updateTable, 1000);
+
+    // Initial call to populate the table
+    updateTable();
   </script>
 </body>
 </html>
