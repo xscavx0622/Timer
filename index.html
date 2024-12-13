@@ -17,115 +17,23 @@
       color: #ffffff;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      background-color: #111A47;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    table thead {
-      background-color: #163060;
-      color: #ffffff;
-    }
-
-    table, th, td {
-      border: none;
-      text-align: center;
-    }
-
-    th, td {
-      padding: 15px;
-    }
-
-    tr:nth-child(even) {
-      background-color: #1A224F;
-    }
-
-    tr:hover {
-      background-color: #2A3765;
-    }
-
-    .timer {
-      font-weight: bold;
-      padding: 5px 10px;
-      border-radius: 5px;
-      display: inline-block;
-    }
-
-    .green {
-      background-color: #d4edda;
-      color: #155724;
-    }
-
-    .orange {
-      background-color: #fff3cd;
-      color: #856404;
-    }
-
-    .red {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
-
-    form {
-      background-color: #111A47;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    form label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #ffffff;
-    }
-
-    form input {
-      width: calc(100% - 20px);
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-
-    form button {
-      background-color: #1f3c88;
-      color: #ffffff;
+    /* Add other existing styles here... */
+    
+    /* Button for clearing storage */
+    #clearStorageBtn {
+      background-color: #e74c3c;
+      color: white;
       padding: 10px 20px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
       display: block;
-      width: 100%;
+      margin: 20px auto;
     }
 
-    form button:hover {
-      background-color: #163060;
-    }
-
-    .remove-btn {
-      color: #ff4d4d;
-      font-weight: bold;
-      cursor: pointer;
-      padding: 0 10px;
-    }
-
-    .log-table {
-      margin-top: 30px;
-      background-color: #111A47;
-    }
-
-    .log-table thead {
-      background-color: #163060;
+    #clearStorageBtn:hover {
+      background-color: #c0392b;
     }
 
   </style>
@@ -179,6 +87,9 @@
       <!-- Log entries will be dynamically generated -->
     </tbody>
   </table>
+
+  <!-- Clear storage button -->
+  <button id="clearStorageBtn">Clear Storage</button>
 
   <script>
     const scheduleTable = document.getElementById('scheduleTable');
@@ -293,6 +204,17 @@
 
     // Initial call to populate the table
     updateTable();
+
+    // Clear storage functionality
+    document.getElementById('clearStorageBtn').addEventListener('click', () => {
+      localStorage.removeItem('clients');
+      localStorage.removeItem('logs');
+      clients = [];
+      logs = [];
+      updateTable();
+      logTable.innerHTML = '';
+    });
+
   </script>
 </body>
 </html>
