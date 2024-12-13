@@ -111,6 +111,14 @@
     form button:hover {
       background-color: #163060;
     }
+
+    .remove-btn {
+      color: #ff4d4d;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0 10px;
+    }
+
   </style>
 </head>
 <body>
@@ -123,6 +131,7 @@
         <th>Start Date</th>
         <th>End Date</th>
         <th>Countdown</th>
+        <th>Remove</th>
       </tr>
     </thead>
     <tbody id="scheduleTable">
@@ -172,7 +181,7 @@
     // Function to update the table
     function updateTable() {
       scheduleTable.innerHTML = '';
-      clients.forEach(client => {
+      clients.forEach((client, index) => {
         const { days, hours, minutes, seconds } = calculateTimeDifference(client.endDate);
         const timerClass = getTimerClass(days);
 
@@ -182,6 +191,7 @@
           <td>${client.startDate}</td>
           <td>${client.endDate}</td>
           <td><span class="timer ${timerClass}">${days}d ${hours}h ${minutes}m ${seconds}s</span></td>
+          <td><span class="remove-btn" onclick="removeClient(${index})">-</span></td>
         `;
         scheduleTable.appendChild(row);
       });
@@ -189,6 +199,13 @@
 
     // Get saved clients from localStorage
     let clients = JSON.parse(localStorage.getItem('clients')) || [];
+
+    // Function to remove a client
+    function removeClient(index) {
+      clients.splice(index, 1); // Remove client from array
+      localStorage.setItem('clients', JSON.stringify(clients)); // Update localStorage
+      updateTable(); // Re-render the table
+    }
 
     // Add client form submission
     addClientForm.addEventListener('submit', event => {
